@@ -5,8 +5,6 @@ import {
 import axios from 'axios';
 
 describe('auth.ts', () => {
-  const { VUE_APP_NLU_SERVICE_URL } = process.env;
-
   beforeEach(() => {
     jest.clearAllMocks();
   });

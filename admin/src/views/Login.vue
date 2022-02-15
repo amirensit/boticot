@@ -46,10 +46,10 @@ export default Vue.extend({
         });
         this.$store.commit('updateToken', authUser.access_token);
         const currentUser: UserType = await getUser(this.currentLogin());
+        this.$store.commit('updateRole', currentUser.role);
         if (currentUser.is_first_login) {
           this.$router.replace('/changePassword');
         } else {
-          this.$router.replace('/');
           window.location.reload();
         }
       } catch (e) {
