@@ -1,5 +1,16 @@
 <template>
-  <div class="inputs" v-loading="loading">
+  <div class="inputs halfSize" v-loading="loading">
+    <el-row :gutter="10">
+        <el-col :span="10">
+          <el-input placeholder="Search by intent" v-model="intentName"></el-input>
+        </el-col>
+        <el-col :span="10">
+          <el-input placeholder="Search by text" v-model="text"></el-input>
+        </el-col>
+        <el-col :span="4" :style="{ textAlign: 'left'}">
+          <el-button type="primary" @click="updateInputs(1)">Search</el-button>
+        </el-col>
+    </el-row>
     <h3 class="marginBottomMedium">
       <span>Users Inputs for agent {{ agentName }}: {{count}}</span>
       <el-button
@@ -15,7 +26,6 @@
     </el-pagination>
      <el-collapse
       v-model="activeNames"
-      class="halfSize"
       accordion
     >
       <div v-for="data in inputs" :key="data.id">
@@ -44,6 +54,8 @@ export default Vue.extend({
       inputs: {},
       loading: true,
       activeNames: [''],
+      intentName: '',
+      text: '',
       count: 0,
       pageSize: 0,
       currentPage: 1,
@@ -51,7 +63,12 @@ export default Vue.extend({
   },
   methods: {
     async updateInputs(page: number) {
-      const resp = await getAgentInputs(this.agentName, page);
+      const intent: string = this.intentName.startsWith('st')
+        ? this.intentName
+        : this.intentName.toUpperCase();
+      this.loading = true;
+      const resp = await getAgentInputs(this.agentName, intent,
+        this.text, page);
       this.inputs = resp.items;
       this.count = resp.count;
       this.loading = false;

@@ -1,12 +1,22 @@
 <template>
-  <div class="training-data" v-loading="loading">
+  <div class="training-data halfSize" v-loading="loading">
+    <el-row :gutter="10">
+        <el-col :span="10">
+          <el-input placeholder="Search by intent" v-model="intentName"></el-input>
+        </el-col>
+        <el-col :span="10">
+          <el-input placeholder="Search by text" v-model="text"></el-input>
+        </el-col>
+        <el-col :span="4" :style="{ textAlign: 'left'}">
+          <el-button type="primary" @click="updateTrainingData(1)">Search</el-button>
+        </el-col>
+    </el-row>
     <h3 class="marginBottomMedium">Training Data for agent {{ agentName }}: {{ count }}</h3>
     <el-pagination v-if="count != 0" background layout="prev, pager, next" @current-change="pageChange"
     :current-page="currentPage" :page-size="pageSize" :total="count">
     </el-pagination>
     <el-collapse
       v-model="activeNames"
-      class="halfSize"
       accordion
     >
       <div v-for="data in trainingData" :key="data.id">
@@ -35,6 +45,8 @@ export default Vue.extend({
       trainingData: {},
       loading: true,
       activeNames: [''],
+      intentName: '',
+      text: '',
       count: 0,
       pageSize: 0,
       currentPage: 1,
@@ -42,7 +54,12 @@ export default Vue.extend({
   },
   methods: {
     async updateTrainingData(page: number) {
-      const resp = await getAgentTrainingData(this.agentName, page);
+      const intent: string = this.intentName.startsWith('st')
+        ? this.intentName
+        : this.intentName.toUpperCase();
+      this.loading = true;
+      const resp = await getAgentTrainingData(this.agentName, intent,
+        this.text, page);
       this.trainingData = resp.items;
       this.count = resp.count;
       this.loading = false;
