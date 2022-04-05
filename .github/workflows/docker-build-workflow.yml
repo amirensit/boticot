@@ -1,0 +1,29 @@
+name: build docker images and push to docker registry
+on:
+  push:
+    branches:    
+      - github-actions-ci
+jobs:
+  job-1:
+    name: Job1-continious-integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: set chmod for .travis.yml file
+        run: chmod +x .travis.yml
+
+      - name: Run .travis.yml build script
+        uses: ktomk/run-travis-yml@v1
+        with:
+          file: .travis.yml
+          steps: |
+            before_install
+            after_success
+          allow-failure: false
+        env:
+          VERSION: 0.8.0-alpha
+          
+      - name: Run docker image ls command
+        run: docker image ls
